@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="pjt:jar">
+    <output-path>$USER_HOME$/upload</output-path>
+    <root id="archive" name="pjt.jar">
+      <element id="module-output" name="pjt" />
+      <element id="extracted-dir" path="$USER_HOME$/.ivy2/cache/org.scala-lang/scala-library/jars/scala-library-2.10.5.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.ivy2/cache/org.scala-lang/scala-reflect/jars/scala-reflect-2.10.5.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/spark-1.6.0-bin-hadoop2.6/lib/spark-assembly-1.6.0-hadoop2.6.0.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
