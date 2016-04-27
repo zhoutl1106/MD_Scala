@@ -60,6 +60,8 @@ object MD_Scala {
     })
   }
 
+  // if method == 0, using online algorithm
+  // if method > 0, using naive algorithm
   def Get_Kurtosis_of_Pair(p0: Int, p1: Int, method: Int): Double = {
     val v = ArrayBuffer.empty[(Atom, Atom)]
     val loop = dat.size - 1
