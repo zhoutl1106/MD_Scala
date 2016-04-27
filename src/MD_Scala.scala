@@ -25,8 +25,6 @@ class Atom extends Serializable {
 
 object MD_Scala {
   var m_file: String = ""
-  var pos0: Int = 0
-  var pos1: Int = 0
   var dat: Array[Array[(String, Double, Double, Double)]] =
     Array.empty[Array[(String, Double, Double, Double)]]
   var sc: SparkContext = null
@@ -44,11 +42,14 @@ object MD_Scala {
   def Load_XYZ_File(patten: String, file: String): Unit = {
     m_file = file
     var content = ""
-//    if (!isCluster) {
-//      content = Source.fromFile(m_file).mkString
-//    }
-//    else
+
+    // use Spark Context to open file, which is the only way I
+    // know that could handle both local file and HDFS
     content = sc.textFile(m_file).collect().mkString("\n")
+
+    // Split to time frames with pattern
+    // it's "number of atoms, comment" on start of
+    // each time frame in XYZ file
     val frames = content.split(patten).filter(_ != "")
     dat = frames.map(p => {
       val t = p.split("\n").filter(_ != "");
@@ -68,6 +69,8 @@ object MD_Scala {
     lastRunningTime(2) = -1.0
     lastRunningTime(3) = -1.0
     var t1 = System.nanoTime()
+
+    // Generate Array of atom pairs
     for (i <- 0 to loop) {
       val a0 = Get_Atom(i, p0)
       val a1 = Get_Atom(i, p1)
@@ -81,9 +84,9 @@ object MD_Scala {
     t2 = System.nanoTime()
     lastRunningTime(1) = (t2 - t1) / 1e6
     t1 = t2
-    //    println(vv0)
-    //    println(vv1)
 
+    // generate distance array
+    // then calculate kurtosis on it.
     if (isCluster) {
       val temp = Cluster_Distance(vv)
       t2 = System.nanoTime()
@@ -147,16 +150,14 @@ object MD_Scala {
     val devs = c.map(rd => (rd - mean) * (rd - mean))
     val stddev = Math.sqrt(devs.sum / cnt)
 
-    //    println("Hello " + mean + " : " + stddev)
-
     val expect = c.map(rd => (rd - mean) * (rd - mean) * (rd - mean) * (rd - mean))
     val kurtosis = expect.sum / cnt / Math.pow(stddev, 4)
 
-    //    println("Kurtosis = " + kurtosis)
     kurtosis
   }
 
   def Standalone_Online_Kurtosis(data: Array[Double]): Double = {
+    // it's the Online Incremental Algorithm from wikipedia
     var n = 0.0
     var mean = 0.0
     var M2 = 0.0
@@ -217,5 +218,4 @@ object MD_Scala {
     means(0) / (means(2) * means(2))
   }
 
-  //  def
 }
